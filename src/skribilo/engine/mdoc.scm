@@ -80,7 +80,7 @@
 (markup-writer 'blockquote
   :options '(:ident :class)
   :before (lambda (doc e)
-            (output-macro e 'Bd "-literal" "-compact" "-offset indent"))
+            (output-macro e 'Bd "-literal" "-offset indent"))
   :after  (lambda (doc e)
             (output-newline e) ;; TODO
             (output-macro e 'Ed)))
@@ -112,12 +112,15 @@
                 (output-macro e 'Nd desc)
                 (skribe-warning 1 "mdoc one-line description is missing"))
 
-              (output body e))))
+              (output body e)
+              (output-newline e))))
 
 (markup-writer 'paragraph
   :options '(:ident :class)
-  :before  (lambda (doc e)
-             (output-macro e 'Pp)))
+  :before (lambda (n e)
+            (output-macro e 'Pp))
+  :after  (lambda (n e)
+            (output-newline e)))
 
 (markup-writer 'section
   :options '(:title :number :file :toc)
@@ -125,8 +128,7 @@
             (let ((body  (markup-body n))
                   (title (markup-option n :title)))
               (output-section e (ast->string title))
-              (output body e)
-              (output-newline e))))
+              (output body e))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
