@@ -19,13 +19,14 @@
 (skribilo-module-syntax)
 
 (define mdoc-engine
-  (make-engine 'mdoc
-    :version 0.1
-    :format "mdoc"
-    :delegate (find-engine 'base)
-    :filter (lambda (str)
-              (string-trim str char-set:blank))
-    :custom '()))
+  (default-engine-set!
+    (make-engine 'mdoc
+      :version 0.1
+      :format "mdoc"
+      :delegate (find-engine 'base)
+      :filter (lambda (str)
+                (string-trim str char-set:blank))
+      :custom '())))
 
 (define (output-macro e name . value)
   (define (->string obj)
@@ -54,7 +55,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(markup-writer 'document mdoc-engine
+(markup-writer 'document
   :options '(:title :author :ending :mdoc-desc :mdoc-date :mdoc-section :mdoc-system)
   :action (lambda (doc e)
             (set-port-encoding! (current-output-port) "UTF-8")
@@ -83,7 +84,7 @@
 
               (output body e))))
 
-(markup-writer 'section mdoc-engine
+(markup-writer 'section
   :options '(:title :number :file :toc)
   :action (lambda (n e)
             (let ((body  (markup-body n))
@@ -94,7 +95,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(markup-writer 'man-name mdoc-engine
+(markup-writer 'man-name
   :action (lambda (n e)
             (output-newline e) ;; TODO
             (output-macro e 'Nm)))
