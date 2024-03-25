@@ -77,6 +77,14 @@
 ;; TODO: 'underline
 (make-ornament 'var 'Va)
 
+(markup-writer 'blockquote
+  :options '(:ident :class)
+  :before (lambda (doc e)
+            (output-macro e 'Bd "-literal" "-compact" "-offset indent"))
+  :after  (lambda (doc e)
+            (output-newline e) ;; TODO
+            (output-macro e 'Ed)))
+
 (markup-writer 'document
   :options '(:title :author :ending :mdoc-desc :mdoc-date :mdoc-section :mdoc-system)
   :action (lambda (doc e)
