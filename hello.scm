@@ -5,8 +5,8 @@
           :mdoc-section 1
           :mdoc-desc [concatenate and print files]
 
-  (chapter :title [Synposis]
+  (section :title [Synposis]
    [Here be dragons])
 
-  (chapter :title [Description]
+  (section :title [Description]
    [The ,(man-name) utility shall read files in sequence and shall write their contents to the standard output in the same sequence.]))

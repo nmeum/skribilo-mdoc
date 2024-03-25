@@ -83,7 +83,7 @@
 
               (output body e))))
 
-(markup-writer 'chapter mdoc-engine
+(markup-writer 'section mdoc-engine
   :options '(:title :number :file :toc)
   :action (lambda (n e)
             (let ((body  (markup-body n))
