@@ -55,6 +55,28 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define (make-ornament markup macro)
+  (markup-writer markup
+    :before (string-append "\n." (symbol->string macro) " ")
+    :after  "\n"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(make-ornament 'bold 'Sy)
+;; TODO: 'code
+(make-ornament 'emph 'Em)
+(make-ornament 'it 'Em)
+;; TODO: 'kbd
+(make-ornament 'roman 'No)
+;; TODO: 'sc
+;; TODO: 'underline
+;; TODO: 'sf
+;; TODO: 'sub
+;; TODO: 'sup
+;; TODO: 'tt
+;; TODO: 'underline
+(make-ornament 'var 'Va)
+
 (markup-writer 'document
   :options '(:title :author :ending :mdoc-desc :mdoc-date :mdoc-section :mdoc-system)
   :action (lambda (doc e)
