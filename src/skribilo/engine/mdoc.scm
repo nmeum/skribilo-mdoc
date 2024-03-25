@@ -1,0 +1,97 @@
+;; This file implements an engine for creating mdoc(7) manual
+;; pages using Skribilo. Semantic mdoc(7) markup is supported
+;; through a custom Skribilo markup package.
+;;
+;; See https://man.openbsd.org/mdoc.7
+
+(define-module (skribilo engine mdoc)
+  #:use-module (skribilo lib)
+  #:use-module (skribilo ast)
+  #:use-module (skribilo engine)
+  #:use-module (skribilo writer)
+  #:use-module (skribilo utils syntax)
+  #:use-module (skribilo package base)
+  #:autoload   (skribilo parameters)    (*destination-file*)
+  #:use-module (skribilo output)
+
+  #:export (mdoc-engine))
+
+(skribilo-module-syntax)
+
+(define mdoc-engine
+  (make-engine 'mdoc
+    :version 0.1
+    :format "mdoc"
+    :delegate (find-engine 'base)
+    :filter (lambda (x) x)
+    :custom '()))
+
+(define (output-macro e name . value)
+  (define (->string obj)
+    (if (string? obj)
+      obj
+      (ast->string obj)))
+
+  (output
+    (format #f ".~a ~a\n"
+            (symbol->string name)
+            (string-join (map ->string value) " "))
+    e))
+
+(define (output-newline e)
+  (output "\n" e))
+
+(define (output-section e title)
+  (output-macro e 'Sh (string-upcase title)))
+
+(define (output-preamble e name date section system)
+  (output-macro e 'Dd date)
+  (output-macro e 'Dt name section)
+  (if system
+    (output-macro e 'Os system)
+    (output-macro e 'Os)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(markup-writer 'document mdoc-engine
+  :options '(:title :author :ending :mdoc-desc :mdoc-date :mdoc-section :mdoc-system)
+  :action (lambda (doc e)
+            (set-port-encoding! (current-output-port) "UTF-8")
+            (let ((title   (markup-option doc :title))
+                  (desc    (markup-option doc :mdoc-desc))
+                  (section (markup-option doc :mdoc-section))
+                  (date    (markup-option doc :mdoc-date))
+                  (system  (markup-option doc :mdoc-system))
+                  (body    (markup-body doc)))
+              (output-preamble e
+                title
+                (or date "$Mdocdate$")
+                (or section
+                    (begin
+                      (skribe-warning 1 "mdoc section not defined, defaulting to '1'")
+                      1))
+                system)
+
+              (output-section e "name")
+              (output-macro e 'Nm title)
+              (if desc
+                (output-macro e 'Nd desc)
+                (skribe-warning 1 "mdoc one-line description is missing"))
+
+              (output body e))))
+
+(markup-writer 'chapter mdoc-engine
+  :options '(:title :number :file :toc)
+  :action (lambda (n e)
+            (let ((body  (markup-body n))
+                  (title (markup-option n :title)))
+              (output-section e (ast->string title))
+              (output body e)
+              (output-newline e))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(markup-writer 'man-name mdoc-engine
+  :action (lambda (n e)
+            (output-newline e) ;; TODO
+            (output-macro e 'Nm)))
