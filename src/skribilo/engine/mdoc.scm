@@ -47,7 +47,7 @@
 
 (define (output-preamble e name date section system)
   (output-macro e 'Dd date)
-  (output-macro e 'Dt name section)
+  (output-macro e 'Dt (string-upcase name) section)
   (if system
     (output-macro e 'Os system)
     (output-macro e 'Os)))
@@ -65,7 +65,9 @@
                   (system  (markup-option doc :mdoc-system))
                   (body    (markup-body doc)))
               (output-preamble e
-                title
+                (if (string? title)
+                  title
+                  (ast->string title))
                 (or date "$Mdocdate$")
                 (or section
                     (begin
