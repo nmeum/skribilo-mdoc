@@ -23,7 +23,8 @@
     :version 0.1
     :format "mdoc"
     :delegate (find-engine 'base)
-    :filter (lambda (x) x)
+    :filter (lambda (str)
+              (string-trim str char-set:blank))
     :custom '()))
 
 (define (output-macro e name . value)
