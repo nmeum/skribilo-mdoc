@@ -35,9 +35,11 @@
       (ast->string obj)))
 
   (output
-    (format #f ".~a ~a\n"
-            (symbol->string name)
-            (string-join (map ->string value) " "))
+    (if (null? value)
+      (string-append "." (symbol->string name) "\n")
+      (format #f ".~a ~a\n"
+              (symbol->string name)
+              (string-join (map ->string value) " ")))
     e))
 
 (define (output-newline e)
