@@ -114,6 +114,11 @@
 
               (output body e))))
 
+(markup-writer 'paragraph
+  :options '(:ident :class)
+  :before  (lambda (doc e)
+             (output-macro e 'Pp)))
+
 (markup-writer 'section
   :options '(:title :number :file :toc)
   :action (lambda (n e)
