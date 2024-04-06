@@ -138,3 +138,9 @@
   :action (lambda (n e)
             (output-newline e) ;; TODO
             (output-macro e 'Nm)))
+
+(markup-writer 'man-flags
+  :action (lambda (n e)
+            (apply output-macro
+                   (append (list e 'Fl)
+                           (map string (markup-body n))))))

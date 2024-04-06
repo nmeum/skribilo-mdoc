@@ -5,6 +5,9 @@
           :mdoc-desc [concatenate and print files]
 
   (section :title [Synposis]
+   (man-name)
+   (man-flags #\a #\b #\c)
+
    (p [Max Mustermann hat mal ,(bold [etwas]) kluges gesagt:])
 
    (blockquote [Das hier ist eine Blockquote foo bar])
