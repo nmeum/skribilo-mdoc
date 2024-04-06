@@ -19,6 +19,9 @@
 
 (skribilo-module-syntax)
 
+;; State to detect empty lines in filter function.
+(define filter-prev-empty? #t)
+
 (define mdoc-engine
   (default-engine-set!
     (make-engine 'mdoc
@@ -26,7 +29,12 @@
       :format "mdoc"
       :delegate (find-engine 'base)
       :filter (lambda (str)
-                (string-trim str char-set:blank))
+                (let* ((is-empty? (equal? str "\n"))
+                       (ret-value (if (and is-empty? filter-prev-empty?)
+                                    ""
+                                    (string-trim str char-set:blank))))
+                  (set! filter-prev-empty? is-empty?)
+                  ret-value))
       :custom '())))
 
 (define in-parsed-macro?
@@ -42,6 +50,7 @@
       (ast->string obj)))
 
   (unless (in-parsed-macro?)
+    (output-newline e)
     (output "." e))
 
   (output
