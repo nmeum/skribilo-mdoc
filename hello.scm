@@ -6,7 +6,7 @@
 
   (section :title [Synposis]
    (man-name)
-   (man-flags #\a #\b #\c)
+   (man-flags [v ,(man-arg [verbosity])])
 
    (p [Max Mustermann hat mal ,(bold [etwas]) kluges gesagt:])
 

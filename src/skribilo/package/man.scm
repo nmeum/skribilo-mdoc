@@ -41,5 +41,12 @@
       ;; See the MACRO SYNTAX section in mdoc(7).
       (the-body flags))))
 
+;; The .Ar macro
+(define-markup (man-arg :rest args)
+  (new markup
+    (markup 'man-arg)
+    (loc &invocation-location)
+    (body (the-body args))))
+
 ;; The .Op macro
 ; (define-markup (man-optional 

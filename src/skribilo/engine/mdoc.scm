@@ -5,6 +5,7 @@
 ;; See https://man.openbsd.org/mdoc.7
 
 (define-module (skribilo engine mdoc)
+  #:use-module (skribilo evaluator)
   #:use-module (skribilo lib)
   #:use-module (skribilo ast)
   #:use-module (skribilo engine)
@@ -28,19 +29,33 @@
                 (string-trim str char-set:blank))
       :custom '())))
 
-(define (output-macro e name . value)
+(define in-parsed-macro?
+  (make-parameter #f))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(define (%output-macro e name . value)
   (define (->string obj)
     (if (string? obj)
       obj
       (ast->string obj)))
 
+  (unless (in-parsed-macro?)
+    (output "." e))
+
   (output
     (if (null? value)
-      (string-append "." (symbol->string name) "\n")
-      (format #f ".~a ~a\n"
+      (symbol->string name)
+      (format #f "~a ~a"
               (symbol->string name)
               (string-join (map ->string value) " ")))
     e))
+
+(define (output-macro e name . value)
+  (%output-macro e name value)
+  (unless (in-parsed-macro?)
+    (output-newline e)))
 
 (define (output-newline e)
   (output "\n" e))
@@ -136,11 +151,16 @@
 
 (markup-writer 'man-name
   :action (lambda (n e)
-            (output-newline e) ;; TODO
             (output-macro e 'Nm)))
+
+(markup-writer 'man-arg
+  :options '(:ident :class)
+  :action (lambda (n e)
+            (output-macro e 'Ar (markup-body n))))
 
 (markup-writer 'man-flags
   :action (lambda (n e)
-            (apply output-macro
-                   (append (list e 'Fl)
-                           (map string (markup-body n))))))
+            (%output-macro e 'Fl "")
+            (parameterize ((in-parsed-macro? #t))
+              (evaluate-document (markup-body n) e))
+            (output-newline e)))
