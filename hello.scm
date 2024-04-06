@@ -6,13 +6,19 @@
 
   (section :title [Synposis]
    (man-name)
-   (man-flags [v ,(man-arg [verbosity])])
+   (man-flags [benstuv])
+   (man-arg))
 
-   (p [Max Mustermann hat mal ,(bold [etwas]) kluges gesagt:])
+  (section :title [Description]
+   [The ,(man-name) utility reads files sequentially, writing them to the standard output.
+The ,(man-arg [file]) operands are processed in command-line order.
+If ,(man-arg [file]) is a single dash ,(bold [-]) or absent, ,(man-name) reads from the standard input.]
 
-   (blockquote [Das hier ist eine Blockquote foo bar])
+   (p [The options are as follows:])
 
-   (p [Here be dragons]))
+   (itemize
+     (item [,(man-flags [b]) Number the lines, but don't count blank lines.])
+     (item [,(man-flags [e]) Print a dollar sign at the end of each line.])))
 
   (section :title [Description]
    [The ,(man-name) utility shall read files ,(bold [in sequence]) and shall write their contents to the standard output in the same sequence.]))
