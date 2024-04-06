@@ -156,6 +156,20 @@
               (output-section e (ast->string title))
               (output body e))))
 
+(markup-writer 'itemize
+   :options '(:symbol)
+   :before (lambda (n e)
+             (output-macro e 'Bl "-tag" "-width Ds"))
+   :after (lambda (n e)
+            (output-macro e 'El)))
+
+(markup-writer 'item
+   :options '(:key)
+   :action (lambda (n e)
+             (%output-macro e 'It "")
+             (parameterize ((in-parsed-macro? #t))
+               (evaluate-document (markup-body n) e))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (markup-writer 'man-name
