@@ -166,9 +166,14 @@
 (markup-writer 'item
    :options '(:key)
    :action (lambda (n e)
-             (%output-macro e 'It "")
-             (parameterize ((in-parsed-macro? #t))
-               (evaluate-document (markup-body n) e))))
+             (let ((k (markup-option n :key)))
+               (if k
+                 (begin
+                   (%output-macro e 'It "")
+                   (parameterize ((in-parsed-macro? #t))
+                     (evaluate-document k e)))
+                 (output-macro e 'It)))
+             (evaluate-document (markup-body n) e)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
