@@ -13,8 +13,11 @@
   #:use-module (skribilo utils syntax)
   #:use-module (skribilo utils strings)
   #:use-module (skribilo package base)
-  #:autoload   (skribilo parameters)    (*destination-file*)
   #:use-module (skribilo output)
+  #:autoload   (skribilo parameters)    (*destination-file*)
+
+  #:use-module (mdoc utils markup)
+  #:use-module (mdoc utils output)
 
   #:export (mdoc-engine))
 
@@ -37,76 +40,6 @@
                   (set! filter-prev-empty? is-empty?)
                   ret-value))
       :custom '())))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define in-parsed-macro?
-  (make-parameter #f))
-
-(define-syntax with-parsed-macro
-  (syntax-rules ()
-    ((with-parsed-macro (E M) BODY ...)
-     (begin
-       (%output-macro E M "")
-       (parameterize ((in-parsed-macro? #t))
-         BODY ...)
-       (output-newline E)))))
-
-(define (make-listing markup . list-opts)
-  (markup-writer markup
-     :options '(:symbol)
-     :before (lambda (n e)
-               (apply output-macro e 'Bl list-opts))
-     :after (lambda (n e)
-              (output-macro e 'El))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(define (%output-macro e name . value)
-  (define (->string obj)
-    (if (string? obj)
-      obj
-      (ast->string obj)))
-
-  (unless (in-parsed-macro?)
-    (output-newline e)
-    (output "." e))
-
-  (output
-    (if (null? value)
-      (symbol->string name)
-      (format #f "~a ~a"
-              (symbol->string name)
-              (string-join (map ->string value) " ")))
-    e))
-
-(define (output-macro e name . value)
-  (%output-macro e name value)
-  (unless (in-parsed-macro?)
-    (output-newline e)))
-
-(define (output-newline e)
-  (output "\n" e))
-
-(define (output-section e title)
-  (output-macro e 'Sh (string-upcase title)))
-
-(define (output-preamble e name date section system)
-  (output-macro e 'Dd date)
-  (output-macro e 'Dt (string-upcase name) section)
-  (if system
-    (output-macro e 'Os system)
-    (output-macro e 'Os)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (make-ornament markup macro)
-  (markup-writer markup
-    :before (string-append "\n." (symbol->string macro) " ")
-    :after  "\n"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (make-ornament 'bold 'Sy)
 ;; TODO: 'code
