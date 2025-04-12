@@ -52,6 +52,14 @@
          BODY ...)
        (output-newline E)))))
 
+(define (make-listing markup . list-opts)
+  (markup-writer markup
+     :options '(:symbol)
+     :before (lambda (n e)
+               (apply output-macro e 'Bl list-opts))
+     :after (lambda (n e)
+              (output-macro e 'El))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -167,12 +175,8 @@
               (output-section e (ast->string title))
               (output body e))))
 
-(markup-writer 'itemize
-   :options '(:symbol)
-   :before (lambda (n e)
-             (output-macro e 'Bl "-tag" "-width Ds"))
-   :after (lambda (n e)
-            (output-macro e 'El)))
+(make-listing 'itemize "-tag" "-width Ds")
+(make-listing 'enumerate "-enum")
 
 (markup-writer 'item
    :options '(:key)
