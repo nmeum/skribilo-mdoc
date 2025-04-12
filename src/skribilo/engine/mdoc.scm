@@ -121,15 +121,8 @@
                  (output-macro e 'It)))
              (evaluate-document (markup-body n) e)))
 
-(markup-writer 'mark
-   :action (lambda (n e)
-             (output-macro e 'Tg (markup-body n))))
-
-(markup-writer 'mailto
-   :action (lambda (n e)
-             (output-macro e 'Mt (markup-body n))))
-
-;; TODO: maps-to macro.
+(make-macro 'mark 'Tg)
+(make-macro 'mailto 'Mt :text)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
