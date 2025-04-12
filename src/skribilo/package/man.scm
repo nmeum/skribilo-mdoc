@@ -21,17 +21,6 @@
        (loc &invocation-location)
        (markup 'man-name)))
 
-;; The .Fl macro from mdoc(7).
-;;
-;; Note that .Fl is a "callable macros", e.g.:
-;;
-;;   .Op Fl v
-;;
-;; Note that .Fl is also a "parsed" macro, e.g.:
-;;
-;;   .Fl o Ar file
-;;
-;; TODO: Both the callable and parsed feature must be supported somehow.
 (define-markup (man-flags :rest flags)
   (new markup
     (markup 'man-flags)

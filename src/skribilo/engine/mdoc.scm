@@ -37,8 +37,19 @@
                   ret-value))
       :custom '())))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (define in-parsed-macro?
   (make-parameter #f))
+
+(define-syntax with-parsed-macro
+  (syntax-rules ()
+    ((with-parsed-macro (E M) BODY ...)
+     (begin
+       (%output-macro E M "")
+       (parameterize ((in-parsed-macro? #t))
+         BODY ...)
+       (output-newline E)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -108,7 +119,6 @@
   :before (lambda (doc e)
             (output-macro e 'Bd "-literal" "-offset indent"))
   :after  (lambda (doc e)
-            (output-newline e) ;; TODO
             (output-macro e 'Ed)))
 
 (markup-writer 'document
@@ -168,10 +178,8 @@
    :action (lambda (n e)
              (let ((k (markup-option n :key)))
                (if k
-                 (begin
-                   (%output-macro e 'It "")
-                   (parameterize ((in-parsed-macro? #t))
-                     (evaluate-document k e)))
+                 (with-parsed-macro (e 'It)
+                   (evaluate-document k e))
                  (output-macro e 'It)))
              (evaluate-document (markup-body n) e)))
 
@@ -188,7 +196,5 @@
 
 (markup-writer 'man-flags
   :action (lambda (n e)
-            (%output-macro e 'Fl "")
-            (parameterize ((in-parsed-macro? #t))
-              (evaluate-document (markup-body n) e))
-            (output-newline e)))
+            (with-parsed-macro (e 'Fl)
+              (evaluate-document (markup-body n) e))))
