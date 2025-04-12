@@ -6,7 +6,7 @@
 
   (section :title [Synposis]
    (man-name)
-   (man-flags [benstuv])
+   (man-opt (man-flags [benstuv]))
    (man-arg))
 
   (section :title [Description]

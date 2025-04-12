@@ -38,4 +38,8 @@
     (body (the-body args))))
 
 ;; The .Op macro
-; (define-markup (man-optional 
+(define-markup (man-opt :rest args)
+  (new markup
+    (markup 'man-opt)
+    (loc &invocation-location)
+    (body (the-body args))))

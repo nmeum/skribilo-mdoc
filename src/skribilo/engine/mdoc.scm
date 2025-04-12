@@ -198,3 +198,8 @@
   :action (lambda (n e)
             (with-parsed-macro (e 'Fl)
               (evaluate-document (markup-body n) e))))
+
+(markup-writer 'man-opt
+  :action (lambda (n e)
+            (with-parsed-macro (e 'Op)
+              (evaluate-document (markup-body n) e))))
