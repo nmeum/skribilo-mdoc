@@ -11,6 +11,7 @@
   #:use-module (skribilo engine)
   #:use-module (skribilo writer)
   #:use-module (skribilo utils syntax)
+  #:use-module (skribilo utils strings)
   #:use-module (skribilo package base)
   #:autoload   (skribilo parameters)    (*destination-file*)
   #:use-module (skribilo output)
@@ -182,6 +183,16 @@
                    (evaluate-document k e))
                  (output-macro e 'It)))
              (evaluate-document (markup-body n) e)))
+
+(markup-writer 'mark
+   :action (lambda (n e)
+             (output-macro e 'Tg (markup-body n))))
+
+(markup-writer 'mailto
+   :action (lambda (n e)
+             (output-macro e 'Mt (markup-body n))))
+
+;; TODO: maps-to macro.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
