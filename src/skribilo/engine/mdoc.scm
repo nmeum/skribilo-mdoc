@@ -32,6 +32,7 @@
       :version 0.1
       :format "mdoc"
       :delegate (find-engine 'base)
+      ;; TODO: Remove the newline filtering code at some point.
       :filter (lambda (str)
                 (let* ((is-empty? (equal? str "\n"))
                        (ret-value (if (and is-empty? filter-prev-empty?)
@@ -56,12 +57,10 @@
 ;; TODO: 'underline
 (make-ornament 'var 'Va)
 
-(markup-writer 'blockquote
-  :options '(:ident :class)
-  :before (lambda (doc e)
-            (output-macro e 'Bd "-literal" "-offset indent"))
-  :after  (lambda (doc e)
-            (output-macro e 'Ed)))
+(make-block 'blockquote '(Bd "-literal" "-offset indent") '(Ed))
+(make-block 'center '(Bd "-centered") '(Ed))
+(make-block 'pre '(Bd "-literal") '(Ed))
+;; TODO: flush
 
 (markup-writer 'document
   :options '(:title :author :ending :mdoc-desc :mdoc-date :mdoc-section :mdoc-system)
@@ -94,7 +93,6 @@
               (output-newline e))))
 
 (markup-writer 'paragraph
-  :options '(:ident :class)
   :before (lambda (n e)
             (output-macro e 'Pp))
   :after  (lambda (n e)
@@ -110,6 +108,7 @@
 
 (make-listing 'itemize "-tag" "-width Ds")
 (make-listing 'enumerate "-enum")
+;; TODO: description
 
 (markup-writer 'item
    :options '(:key)
@@ -122,7 +121,7 @@
              (evaluate-document (markup-body n) e)))
 
 (make-macro 'mark 'Tg)
-(make-macro 'mailto 'Mt :text)
+(make-macro 'mailto 'Mt '(:text))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -130,17 +129,6 @@
   :action (lambda (n e)
             (output-macro e 'Nm)))
 
-(markup-writer 'man-arg
-  :options '(:ident :class)
-  :action (lambda (n e)
-            (output-macro e 'Ar (markup-body n))))
-
-(markup-writer 'man-flags
-  :action (lambda (n e)
-            (with-parsed-macro (e 'Fl)
-              (evaluate-document (markup-body n) e))))
-
-(markup-writer 'man-opt
-  :action (lambda (n e)
-            (with-parsed-macro (e 'Op)
-              (evaluate-document (markup-body n) e))))
+(make-parsed-macro 'man-arg 'Ar)
+(make-parsed-macro 'man-flags 'Fl)
+(make-parsed-macro 'man-opt 'Op)
