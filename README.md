@@ -39,7 +39,7 @@ For example, implementing [pollen]-like input syntax that is easy to write (like
 Run the following commands from the repository root:
 
 	$ export GUILE_LOAD_PATH="$(pwd)/src"
-	$ skribilo -t mdoc hello.scm
+	$ skribilo -t mdoc example.scm
 
 ### License
 
